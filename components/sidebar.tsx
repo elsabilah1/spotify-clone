@@ -1,4 +1,6 @@
+import axios from 'axios'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import {
   MdHome,
   MdSearch,
@@ -42,14 +44,21 @@ const musicMenu = [
   },
 ]
 // #endregion
-// #region playlist
-const playlist = new Array(10).fill(1).map((item, i) => ({
-  name: `Playlist #${i + 1}`,
-  route: '/',
-}))
-// #endregion
 
 const Sidebar = () => {
+  const [playlists, setPlaylists] = useState([])
+
+  const getPlaylists = async () => {
+    const {
+      data: { items },
+    } = await axios.get('/api/playlists')
+    setPlaylists(items)
+  }
+
+  useEffect(() => {
+    getPlaylists()
+  }, [])
+
   return (
     <div className='absolute flex flex-col gap-6 bg-black text-white w-40 h-[calc(100vh-96px)] p-5'>
       {/* LOGO */}
@@ -67,8 +76,9 @@ const Sidebar = () => {
       <ListMenu menu={navMenu} />
       <ListMenu menu={musicMenu} />
 
+      <hr className='-my-2 border-neutral-700' />
       {/* PLAYLIST */}
-      <ListMenu menu={playlist} />
+      <ListMenu menu={playlists} />
     </div>
   )
 }
